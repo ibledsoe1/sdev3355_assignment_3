@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: product_service
+    env: docker
+    dockerfilePath: ./campus_store/product_service/Dockerfile
+    envVars:
+      - key: POSTGRES_URL
+        sync: false # so we use value in the render dashboard
+
+  - type: web
+    name: order_service
+    env: docker
+    dockerfilePath: ./campus_store/order_service/Dockerfile
+    envVars:
+      - key: POSTGRES_URL
+        sync: false
