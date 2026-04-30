@@ -36,10 +36,29 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+
+      - name: Log into GitHub container registry 
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
   
       - name: Build product_service image
-        run: docker build -t product_service ./campus_store/product_service
-      
+        run: |
+          docker build -t ghcr.io/${{ github.repository }}/product_service:latest \
+          ./campus_store/product_service
+          
       - name: Build order_service image
-        run: docker build -t order_service ./campus_store/order_service
-        
+        run: |
+          docker build -t ghcr.io/${{ github.repository }}/order_service:latest \
+          ./campus_store/order_service
+
+      # Only push IF we're pushing, not pulling
+      - name: Push product_service image
+        if: github.event_name == 'push'
+        run: docker push ghcr.io/${{ github.repository }}/product_service:latest
+      
+      - name: Push order_service image
+        if: github.event_name == 'push'
+        run: docker push ghcr.io/${{ github.repository }}/order_service:latest
